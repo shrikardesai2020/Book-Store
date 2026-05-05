@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BookVerse – Admin</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="navbar">
+  <h1>📚 BookVerse Admin</h1>
+  <nav></nav>
+  <button class="cart-icon" onclick="logout()" id="logout-btn" style="display:none">🔓 Logout</button>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════
+     LOGIN SCREEN
+════════════════════════════════════════════════════════ -->
+<div class="admin-login-wrap" id="login-screen">
+  <div class="admin-login-box">
+    <h2>🔐 Admin Login</h2>
+    <p>Enter your credentials to access the dashboard</p>
+
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="admin-user" placeholder="admin">
+    </div>
+    <div class="form-group" style="margin-bottom:20px">
+      <label>Password</label>
+      <input type="password" id="admin-pass" placeholder="••••••••"
+        onkeydown="if(event.key==='Enter') doLogin()">
+    </div>
+
+    <p id="login-error">❌ Invalid username or password</p>
+    <button class="btn-gold" onclick="doLogin()">Login →</button>
+
+    <p style="margin-top:20px;font-size:12px;opacity:0.4">
+      Default: admin / bookverse123
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     ADMIN DASHBOARD
+════════════════════════════════════════════════════════ -->
+<div class="admin-wrap" id="dashboard" style="display:none">
+  <h2>📊 Admin Dashboard</h2>
+  <p>Manage orders and books</p>
+
+  <!-- Tab Buttons -->
+  <div class="admin-tabs">
+    <button class="tab-btn active" onclick="switchTab('overview')">📈 Overview</button>
+    <button class="tab-btn" onclick="switchTab('orders')">🧾 Orders</button>
+    <button class="tab-btn" onclick="switchTab('books')">📚 Manage Books</button>
+  </div>
+
+  <!-- ── OVERVIEW TAB ── -->
+  <div class="admin-panel active" id="tab-overview">
+    <div class="stats-row" id="stats-row">
+      <!-- filled by JS -->
+    </div>
+    <h3 style="color:#ffd27a;margin-bottom:12px;">🕐 Recent Orders</h3>
+    <div id="recent-orders-overview"></div>
+  </div>
+
+  <!-- ── ORDERS TAB ── -->
+  <div class="admin-panel" id="tab-orders">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h3 style="color:#ffd27a">All Orders</h3>
+      <button style="background:#e94560;padding:8px 18px;border-radius:8px;font-size:13px"
+        onclick="clearOrders()">🗑️ Clear All Orders</button>
+    </div>
+    <div id="orders-list"></div>
+  </div>
+
+  <!-- ── BOOKS TAB ── -->
+  <div class="admin-panel" id="tab-books">
+    <!-- Add Book Form -->
+    <div class="add-book-form">
+      <h3>➕ Add New Book</h3>
+      <div class="form-row">
+        <input type="text" id="new-title" placeholder="Book title *">
+        <input type="text" id="new-author" placeholder="Author *">
+      </div>
+      <div class="form-row">
+        <input type="number" id="new-price" placeholder="Price (₹) *" min="0">
+        <select id="new-cat">
+          <option value="Programming">💻 Programming</option>
+          <option value="Engineering">⚙️ Engineering</option>
+          <option value="Data Science">📊 Data Science</option>
+          <option value="Business">📈 Business</option>
+          <option value="Science">🔬 Science</option>
+        </select>
+      </div>
+      <input type="text" id="new-image" placeholder="Image URL (optional – leave blank for default)">
+      <p id="add-error" style="color:#ff6b6b;font-size:12px;display:none;margin-bottom:8px">
+        ⚠️ Title, Author and Price are required.
+      </p>
+      <button class="btn-add-book" onclick="addBook()">➕ Add Book</button>
+    </div>
+
+    <!-- Book Grid -->
+    <h3 style="color:#ffd27a;margin-bottom:16px;">📚 All Books (<span id="book-count">0</span>)</h3>
+    <div class="admin-book-grid" id="admin-book-grid"></div>
+  </div>
+</div>
+
+<script src="data.js"></script>
+<script>
+  // ── CREDENTIALS (change these to whatever you want) ──────
+  const ADMIN_USER = "admin";
+  const ADMIN_PASS = "bookverse123";
+
+  // ── EXTRA BOOKS added via admin (persisted in localStorage) ──
+  let extraBooks = JSON.parse(localStorage.getItem("bv_extra_books") || "[]");
+  let removedIds  = JSON.parse(localStorage.getItem("bv_removed_ids") || "[]");
+
+  // Full book list = booksData + extra books, minus removed ones
+  function getAllBooks() {
+    return [...booksData, ...extraBooks].filter(b => !removedIds.includes(b.id));
+  }
+
+  // ── LOGIN ─────────────────────────────────────────────────
+  function doLogin() {
+    const u = document.getElementById("admin-user").value.trim();
+    const p = document.getElementById("admin-pass").value;
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
+      document.getElementById("login-screen").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
+      document.getElementById("logout-btn").style.display = "inline-block";
+      renderDashboard();
+    } else {
+      document.getElementById("login-error").style.display = "block";
+    }
+  }
+
+  function logout() {
+    document.getElementById("login-screen").style.display = "flex";
+    document.getElementById("dashboard").style.display = "none";
+    document.getElementById("logout-btn").style.display = "none";
+    document.getElementById("admin-user").value = "";
+    document.getElementById("admin-pass").value = "";
+    document.getElementById("login-error").style.display = "none";
+  }
+
+  // ── TABS ─────────────────────────────────────────────────
+  function switchTab(name) {
+    document.querySelectorAll(".admin-panel").forEach(p => p.classList.remove("active"));
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    document.getElementById("tab-" + name).classList.add("active");
+    event.target.classList.add("active");
+    if (name === "orders") renderOrders();
+    if (name === "books")  renderBooks();
+    if (name === "overview") renderOverview();
+  }
+
+  // ── RENDER DASHBOARD ─────────────────────────────────────
+  function renderDashboard() {
+    renderOverview();
+    renderBooks();
+  }
+
+  function getOrders() {
+    return JSON.parse(localStorage.getItem("bv_orders") || "[]");
+  }
+
+  function renderOverview() {
+    const orders = getOrders();
+    const allBooks = getAllBooks();
+    const totalRevenue = orders.reduce((s, o) => s + (o.total || 0), 0);
+
+    document.getElementById("stats-row").innerHTML = `
+      <div class="stat-card"><div class="num">${orders.length}</div><div class="lbl">Total Orders</div></div>
+      <div class="stat-card"><div class="num">₹${totalRevenue.toLocaleString()}</div><div class="lbl">Revenue</div></div>
+      <div class="stat-card"><div class="num">${allBooks.length}</div><div class="lbl">Books Listed</div></div>
+      <div class="stat-card"><div class="num">${[...new Set(orders.map(o => o.email))].length}</div><div class="lbl">Customers</div></div>
+    `;
+
+    const recent = orders.slice(0, 5);
+    document.getElementById("recent-orders-overview").innerHTML = recent.length === 0
+      ? "<p class='no-orders'>No orders yet.</p>"
+      : `<table class="orders-table">
+          <tr><th>Order ID</th><th>Customer</th><th>Total</th><th>Date</th><th>Status</th></tr>
+          ${recent.map((o, i) => `
+            <tr>
+              <td style="font-size:11px">${o.id}</td>
+              <td>${o.name}<br><span style="opacity:0.5;font-size:11px">${o.email}</span></td>
+              <td>${o.total ? "₹" + o.total : "—"}</td>
+              <td style="font-size:12px">${o.date}</td>
+              <td><span class="${i === 0 ? "badge-new" : "badge-old"}">${i === 0 ? "New" : "Done"}</span></td>
+            </tr>`).join("")}
+        </table>`;
+  }
+
+  // ── ORDERS ───────────────────────────────────────────────
+  function renderOrders() {
+    const orders = getOrders();
+    const el = document.getElementById("orders-list");
+
+    if (orders.length === 0) {
+      el.innerHTML = "<p class='no-orders'>No orders yet.</p>";
+      return;
+    }
+
+    el.innerHTML = `<table class="orders-table">
+      <tr><th>Order ID</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Date</th></tr>
+      ${orders.map(o => `
+        <tr>
+          <td style="font-size:11px">${o.id}</td>
+          <td>
+            <strong>${o.name}</strong><br>
+            <span style="font-size:11px;opacity:0.6">${o.email}</span><br>
+            <span style="font-size:11px;opacity:0.6">${o.phone}</span><br>
+            <span style="font-size:11px;opacity:0.6">${o.address || ""}</span>
+          </td>
+          <td style="font-size:12px">
+            ${o.items ? o.items.map(b => `• ${b.title}`).join("<br>") : "—"}
+          </td>
+          <td style="color:#ffd27a;font-weight:bold">${o.total ? "₹" + o.total : "—"}</td>
+          <td style="font-size:12px">${o.payment || "—"}</td>
+          <td style="font-size:11px">${o.date}</td>
+        </tr>`).join("")}
+    </table>`;
+  }
+
+  function clearOrders() {
+    if (!confirm("Clear ALL orders? This cannot be undone.")) return;
+    localStorage.removeItem("bv_orders");
+    renderOrders();
+    renderOverview();
+  }
+
+  // ── BOOKS ─────────────────────────────────────────────────
+  function renderBooks() {
+    const books = getAllBooks();
+    document.getElementById("book-count").innerText = books.length;
+    const grid = document.getElementById("admin-book-grid");
+
+    grid.innerHTML = books.map(b => `
+      <div class="admin-book-card" id="acard-${b.id}">
+        <img src="${b.image}" alt="${b.title}" loading="lazy"
+          onerror="this.src='https://via.placeholder.com/200x140?text=No+Image'">
+        <div class="info">
+          <h4>${b.title}</h4>
+          <p>${b.author}</p>
+          <p>${b.category}</p>
+          <p class="price">₹${b.price}</p>
+          <button class="btn-remove" onclick="removeBook(${b.id})">🗑️ Remove</button>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function removeBook(id) {
+    if (!confirm("Remove this book from the store?")) return;
+    removedIds.push(id);
+    localStorage.setItem("bv_removed_ids", JSON.stringify(removedIds));
+    renderBooks();
+    renderOverview();
+  }
+
+  function addBook() {
+    const title  = document.getElementById("new-title").value.trim();
+    const author = document.getElementById("new-author").value.trim();
+    const price  = parseInt(document.getElementById("new-price").value);
+    const cat    = document.getElementById("new-cat").value;
+    const image  = document.getElementById("new-image").value.trim()
+                   || "https://covers.openlibrary.org/b/id/8232999-M.jpg";
+    const errEl  = document.getElementById("add-error");
+
+    if (!title || !author || !price) {
+      errEl.style.display = "block";
+      return;
+    }
+    errEl.style.display = "none";
+
+    const newBook = {
+      id: Date.now(),   // unique id based on timestamp
+      title, author, price, image, category: cat
+    };
+    extraBooks.push(newBook);
+    localStorage.setItem("bv_extra_books", JSON.stringify(extraBooks));
+
+    // Clear form
+    document.getElementById("new-title").value = "";
+    document.getElementById("new-author").value = "";
+    document.getElementById("new-price").value = "";
+    document.getElementById("new-image").value = "";
+
+    renderBooks();
+    renderOverview();
+    alert(`✅ "${title}" added to the store!`);
+  }
+</script>
+
+</body>
+</html>

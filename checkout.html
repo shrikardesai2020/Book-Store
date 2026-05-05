@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BookVerse – Checkout</title>
+  <link rel="stylesheet" href="styles.css">
+  <!-- EmailJS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+</head>
+<body>
+
+<header class="navbar">
+  <h1>📚 BookVerse</h1>
+  <nav><a href="index.html">🏠 Home</a></nav>
+  <button class="cart-icon" onclick="window.location.href='cart.html'">
+    🛒 Cart (<span id="cart-count">0</span>)
+  </button>
+</header>
+
+<div class="checkout-container">
+  <a href="cart.html" class="back-link">← Back to Cart</a>
+  <h2>🧾 Checkout</h2>
+
+  <div id="checkout-form">
+    <div class="form-group">
+      <label>Full Name *</label>
+      <input type="text" id="name" placeholder="Ramesh Kumar">
+    </div>
+    <div class="form-group">
+      <label>Email * <span style="font-size:11px;opacity:0.6">(order confirmation will be sent here)</span></label>
+      <input type="email" id="email" placeholder="ramesh@example.com">
+    </div>
+    <div class="form-group">
+      <label>Phone *</label>
+      <input type="text" id="phone" placeholder="+91 98765 43210">
+    </div>
+    <div class="form-group">
+      <label>Delivery Address *</label>
+      <input type="text" id="address" placeholder="123 MG Road, Bengaluru">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label>City</label>
+        <input type="text" id="city" placeholder="Bengaluru">
+      </div>
+      <div class="form-group">
+        <label>Pincode</label>
+        <input type="text" id="pincode" placeholder="560001">
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Payment Method *</label>
+      <select id="payment">
+        <option value="upi">UPI (GPay / PhonePe / Paytm)</option>
+        <option value="card">Credit / Debit Card</option>
+        <option value="netbanking">Net Banking</option>
+        <option value="cod">Cash on Delivery</option>
+      </select>
+    </div>
+
+    <div class="summary-box" id="checkout-summary"></div>
+    <br>
+
+    <p id="form-error" style="color:#ff6b6b;font-size:13px;margin-bottom:10px;display:none;">
+      ⚠️ Please fill in all required fields (Name, Email, Phone, Address).
+    </p>
+    <p id="email-status" style="font-size:13px;margin-bottom:10px;display:none;"></p>
+
+    <button class="btn-gold" id="place-btn" onclick="placeOrder()">✓ Place Order</button>
+  </div>
+
+  <div class="success-box" id="success-box">
+    <div class="success-check">✓</div>
+    <h3>Order Placed Successfully!</h3>
+    <p>
+      Thank you for your order.<br>
+      A confirmation email has been sent to <strong id="confirm-email"></strong>.<br>
+      Your books will arrive in 3–5 business days.
+    </p>
+    <button class="btn-gold" style="max-width:220px;margin:0 auto;" onclick="window.location.href='index.html'">
+      Back to Store
+    </button>
+  </div>
+</div>
+
+<script>
+  // ── EMAILJS SETUP ─────────────────────────────────────────────────────────
+  // STEP 1: Go to https://www.emailjs.com and create a FREE account
+  // STEP 2: Add an Email Service (Gmail recommended) → copy your Service ID
+  // STEP 3: Create an Email Template → copy your Template ID
+  // STEP 4: Go to Account → copy your Public Key
+  // STEP 5: Paste all three below:
+
+  const EMAILJS_PUBLIC_KEY  = "YOUR_PUBLIC_KEY";   // ← paste here
+  const EMAILJS_SERVICE_ID  = "YOUR_SERVICE_ID";   // ← paste here
+  const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";  // ← paste here
+
+  // ── TEMPLATE VARIABLES (must match your EmailJS template) ────────────────
+  // In your EmailJS template use these variables:
+  //   {{customer_name}}  → customer full name
+  //   {{customer_email}} → customer email
+  //   {{order_items}}    → list of books
+  //   {{order_total}}    → total amount
+  //   {{payment_method}} → payment type
+  //   {{delivery_address}} → full address
+
+  emailjs.init(EMAILJS_PUBLIC_KEY);
+
+  // ── CART LOAD ─────────────────────────────────────────────────────────────
+  const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  if (cart.length === 0) window.location.href = "cart.html";
+  document.getElementById("cart-count").innerText = cart.length;
+
+  function renderSummary() {
+    const subtotal = cart.reduce((s, b) => s + b.price, 0);
+    const discount = Math.floor(subtotal * 0.05);
+    const total = subtotal - discount;
+    document.getElementById("checkout-summary").innerHTML = `
+      <div class="summary-row"><span>Items (${cart.length})</span><span>₹${subtotal}</span></div>
+      <div class="summary-row"><span>Discount (5%)</span><span class="discount-text">− ₹${discount}</span></div>
+      <div class="summary-row"><span>Delivery</span><span class="discount-text">Free</span></div>
+      <div class="summary-total"><span>Total Payable</span><span>₹${total}</span></div>
+    `;
+    return total;
+  }
+
+  const orderTotal = renderSummary();
+
+  // ── PLACE ORDER ───────────────────────────────────────────────────────────
+  async function placeOrder() {
+    const name    = document.getElementById("name").value.trim();
+    const email   = document.getElementById("email").value.trim();
+    const phone   = document.getElementById("phone").value.trim();
+    const address = document.getElementById("address").value.trim();
+    const city    = document.getElementById("city").value.trim();
+    const pincode = document.getElementById("pincode").value.trim();
+    const payment = document.getElementById("payment");
+    const paymentText = payment.options[payment.selectedIndex].text;
+    const errEl   = document.getElementById("form-error");
+    const statusEl = document.getElementById("email-status");
+    const btn = document.getElementById("place-btn");
+
+    if (!name || !email || !phone || !address) {
+      errEl.style.display = "block";
+      return;
+    }
+    errEl.style.display = "none";
+
+    // Disable button while processing
+    btn.disabled = true;
+    btn.innerText = "Placing order...";
+    statusEl.style.display = "block";
+    statusEl.style.color = "#ffd27a";
+    statusEl.innerText = "📧 Sending confirmation email...";
+
+    // Build order items string for email
+    const itemsList = cart.map(b => `• ${b.title} by ${b.author} — ₹${b.price}`).join("\n");
+    const fullAddress = `${address}, ${city} ${pincode}`.trim();
+
+    // Send email via EmailJS
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
+        customer_name:    name,
+        customer_email:   email,
+        order_items:      itemsList,
+        order_total:      "₹" + orderTotal,
+        payment_method:   paymentText,
+        delivery_address: fullAddress
+      });
+      statusEl.style.color = "#7dff9a";
+      statusEl.innerText = "✓ Confirmation email sent!";
+    } catch (err) {
+      // Even if email fails, still complete the order
+      statusEl.style.color = "#ff6b6b";
+      statusEl.innerText = "⚠️ Email could not be sent (check your EmailJS keys), but order is placed.";
+    }
+
+    // Save order to localStorage for admin to see
+    const orders = JSON.parse(localStorage.getItem("bv_orders") || "[]");
+    orders.unshift({
+      id: "ORD" + Date.now(),
+      name, email, phone,
+      address: fullAddress,
+      payment: paymentText,
+      items: cart,
+      total: orderTotal,
+      date: new Date().toLocaleString("en-IN")
+    });
+    localStorage.setItem("bv_orders", JSON.stringify(orders));
+
+    // Clear cart
+    localStorage.removeItem("cart");
+    document.getElementById("cart-count").innerText = "0";
+
+    // Show success after a short delay so user sees the status message
+    setTimeout(() => {
+      document.getElementById("checkout-form").style.display = "none";
+      document.getElementById("confirm-email").innerText = email;
+      document.getElementById("success-box").style.display = "block";
+    }, 1500);
+  }
+</script>
+
+</body>
+</html>

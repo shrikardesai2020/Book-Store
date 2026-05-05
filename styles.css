@@ -1,0 +1,357 @@
+/* ===== RESET & BASE ===== */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #80a0b9, #5f209d);
+  min-height: 100vh;
+  color: white;
+}
+
+/* ===== NAVBAR ===== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 24px;
+  background: #d1a65a;
+  color: black;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.navbar h1 { font-size: 22px; color: black; }
+
+nav a {
+  margin: 0 10px;
+  color: white;
+  text-decoration: none;
+}
+nav a:hover { text-decoration: underline; }
+
+.cart-icon {
+  background: rgba(255,255,255,0.2);
+  border: 2px solid white;
+  color: white;
+  padding: 8px 18px;
+  border-radius: 24px;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+.cart-icon:hover { background: rgba(255,255,255,0.4); }
+
+/* ===== HERO ===== */
+.hero {
+  text-align: left;
+  padding: 30px 24px 20px;
+  color: white;
+}
+.hero h2 { font-size: 26px; margin-bottom: 14px; }
+
+input[type="text"], input[type="email"],
+input[type="password"], input {
+  padding: 10px 18px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+#search { width: 50%; }
+
+/* ===== CATEGORY BUTTONS ===== */
+.category-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 0 24px 20px;
+}
+.cat-btn {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.4);
+  color: white;
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: background 0.2s;
+}
+.cat-btn:hover, .cat-btn.active {
+  background: #e94560;
+  border-color: #e94560;
+}
+
+/* ===== SECTIONS ===== */
+.section { padding: 24px; max-width: 900px; margin: 0 auto; }
+.section h2 { font-size: 20px; margin-bottom: 12px; color: #ffd27a; }
+.section p { margin-bottom: 6px; font-size: 14px; opacity: 0.9; }
+
+/* ===== BOOK GRID ===== */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px 24px 10px;
+}
+
+/* ===== SHOW MORE BUTTON ===== */
+.show-more-wrap {
+  text-align: center;
+  padding: 10px 24px 40px;
+}
+#show-more-btn {
+  background: transparent;
+  border: 2px solid #ffd27a;
+  color: #ffd27a;
+  padding: 12px 40px;
+  border-radius: 30px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: bold;
+}
+#show-more-btn:hover {
+  background: #ffd27a;
+  color: #1a1a2e;
+}
+
+/* ===== BOOK CARD ===== */
+.card {
+  background: rgb(229,229,229);
+  padding: 0;
+  border-radius: 12px;
+  text-align: center;
+  overflow: hidden;
+  color: #222;
+  transition: transform 0.2s;
+}
+.card:hover { transform: translateY(-4px); }
+.card img { width: 100%; height: 200px; object-fit: cover; display: block; }
+.card-body { padding: 12px; }
+.card h3 { font-size: 14px; margin-bottom: 4px; color: #222; }
+.card p { font-size: 12px; color: #666; margin-bottom: 4px; }
+.card .price { font-size: 16px; font-weight: bold; color: #5f209d; margin-bottom: 10px; }
+
+/* ===== BUTTONS ===== */
+button { padding: 10px 20px; background: #5b86e5; border: none; color: white; border-radius: 20px; cursor: pointer; font-size: 13px; transition: background 0.2s; }
+button:hover { background: #36d1dc; }
+button:disabled { background: #27ae60; cursor: default; }
+.btn-danger { background: #e94560; }
+.btn-danger:hover { background: #c0392b; }
+.btn-gold { background: #d1a65a; font-size: 16px; padding: 14px 30px; border-radius: 24px; width: 100%; font-weight: bold; }
+.btn-gold:hover { background: #b8892e; }
+
+/* ===== CART PAGE ===== */
+.cart-container { max-width: 700px; margin: 0 auto; padding: 24px; }
+.cart-container h2 { font-size: 24px; margin-bottom: 20px; color: #ffd27a; }
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+.cart-item img { width: 60px; height: 80px; object-fit: cover; border-radius: 8px; flex-shrink: 0; }
+.cart-item-info { flex: 1; }
+.cart-item-info h3 { font-size: 15px; margin-bottom: 4px; }
+.cart-item-info p { font-size: 12px; opacity: 0.7; }
+.cart-item-price { font-size: 16px; font-weight: bold; color: #ffd27a; flex-shrink: 0; }
+
+/* ===== SUMMARY BOX ===== */
+.summary-box {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 16px;
+}
+.summary-row { display: flex; justify-content: space-between; font-size: 14px; margin-bottom: 10px; opacity: 0.85; }
+.summary-total { display: flex; justify-content: space-between; font-size: 20px; font-weight: bold; color: #ffd27a; border-top: 1px solid rgba(255,255,255,0.3); padding-top: 12px; margin-top: 8px; }
+.discount-text { color: #7dff9a; }
+
+.empty-msg { text-align: center; padding: 60px 20px; opacity: 0.6; font-size: 18px; }
+
+.back-link {
+  display: inline-block;
+  margin-bottom: 20px;
+  color: rgba(255,255,255,0.7);
+  text-decoration: none;
+  font-size: 14px;
+  border: 1px solid rgba(255,255,255,0.3);
+  padding: 6px 14px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.back-link:hover { color: white; border-color: white; }
+
+/* ===== CHECKOUT FORM ===== */
+.checkout-container { max-width: 520px; margin: 0 auto; padding: 24px; }
+.checkout-container h2 { font-size: 24px; margin-bottom: 24px; color: #ffd27a; }
+
+.form-group { margin-bottom: 16px; }
+.form-group label { display: block; font-size: 13px; opacity: 0.75; margin-bottom: 6px; }
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 11px 16px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: white;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.form-group input::placeholder { color: rgba(255,255,255,0.4); }
+.form-group input:focus, .form-group select:focus { border-color: #ffd27a; }
+.form-group select option { background: #5f209d; color: white; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ===== SUCCESS MESSAGE ===== */
+.success-box { display: none; text-align: center; padding: 60px 20px; }
+.success-check {
+  width: 70px; height: 70px; border-radius: 50%;
+  background: rgba(39,174,96,0.2); border: 3px solid #27ae60;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 32px; margin: 0 auto 20px;
+}
+.success-box h3 { font-size: 26px; color: #7dff9a; margin-bottom: 10px; }
+.success-box p { opacity: 0.8; font-size: 15px; line-height: 1.7; margin-bottom: 24px; }
+
+/* ===== OFFERS ===== */
+.offer-card {
+  background: rgba(255,255,255,0.12);
+  border-left: 4px solid #ffd27a;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+/* ===== FOOTER ===== */
+footer { text-align: center; padding: 24px; background: #ff512f; color: white; font-size: 14px; line-height: 1.8; }
+footer h2 { margin-bottom: 8px; font-size: 18px; }
+
+/* ===== ADMIN LOGIN PAGE ===== */
+.admin-login-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 90vh;
+  padding: 24px;
+}
+.admin-login-box {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 16px;
+  padding: 40px;
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+.admin-login-box h2 { font-size: 24px; margin-bottom: 8px; color: #ffd27a; }
+.admin-login-box p { font-size: 13px; opacity: 0.6; margin-bottom: 28px; }
+.admin-login-box .form-group { text-align: left; }
+.admin-login-box input {
+  width: 100%; padding: 11px 16px; border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1);
+  color: white; font-size: 14px; outline: none;
+}
+.admin-login-box input::placeholder { color: rgba(255,255,255,0.4); }
+#login-error { color: #ff6b6b; font-size: 13px; margin-bottom: 12px; display: none; }
+
+/* ===== ADMIN DASHBOARD ===== */
+.admin-wrap { max-width: 1100px; margin: 0 auto; padding: 24px; }
+.admin-wrap h2 { font-size: 24px; color: #ffd27a; margin-bottom: 4px; }
+.admin-wrap > p { font-size: 13px; opacity: 0.6; margin-bottom: 24px; }
+
+.admin-tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+.tab-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: white;
+  padding: 9px 22px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+.tab-btn.active, .tab-btn:hover { background: #d1a65a; border-color: #d1a65a; color: #1a1a2e; }
+
+.admin-panel { display: none; }
+.admin-panel.active { display: block; }
+
+/* Admin stats row */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px; margin-bottom: 28px; }
+.stat-card {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 20px;
+  text-align: center;
+}
+.stat-card .num { font-size: 32px; font-weight: bold; color: #ffd27a; }
+.stat-card .lbl { font-size: 12px; opacity: 0.7; margin-top: 4px; }
+
+/* Orders table */
+.orders-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.orders-table th {
+  background: rgba(209,166,90,0.3);
+  padding: 10px 12px;
+  text-align: left;
+  color: #ffd27a;
+  border-bottom: 1px solid rgba(255,255,255,0.2);
+}
+.orders-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  vertical-align: top;
+}
+.orders-table tr:hover td { background: rgba(255,255,255,0.04); }
+.badge-new { background: #27ae60; color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+.badge-old { background: rgba(255,255,255,0.2); color: white; padding: 2px 8px; border-radius: 10px; font-size: 11px; }
+
+/* Book management */
+.admin-book-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+.admin-book-card {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.admin-book-card img { width: 100%; height: 140px; object-fit: cover; }
+.admin-book-card .info { padding: 10px; }
+.admin-book-card h4 { font-size: 13px; margin-bottom: 4px; }
+.admin-book-card p { font-size: 11px; opacity: 0.6; margin-bottom: 8px; }
+.admin-book-card .price { color: #ffd27a; font-weight: bold; font-size: 14px; margin-bottom: 8px; }
+.btn-remove { background: #e94560; padding: 6px 14px; font-size: 12px; border-radius: 8px; width: 100%; }
+.btn-remove:hover { background: #c0392b; }
+
+/* Add book form */
+.add-book-form {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.add-book-form h3 { font-size: 16px; color: #ffd27a; margin-bottom: 16px; }
+.add-book-form input, .add-book-form select {
+  width: 100%; padding: 9px 14px; border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.25); background: rgba(255,255,255,0.1);
+  color: white; font-size: 13px; outline: none; margin-bottom: 10px;
+}
+.add-book-form input::placeholder { color: rgba(255,255,255,0.35); }
+.add-book-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-add-book { background: #27ae60; padding: 10px 28px; border-radius: 10px; font-size: 14px; }
+.btn-add-book:hover { background: #1e8449; }
+
+.no-orders { text-align: center; padding: 40px; opacity: 0.5; font-size: 16px; }

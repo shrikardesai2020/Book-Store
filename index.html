@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BookVerse</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="navbar">
+  <h1>📚 BookVerse</h1>
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#categories">Categories</a>
+    <a href="#offers">Offers</a>
+  </nav>
+  <button class="cart-icon" onclick="window.location.href='cart.html'">
+    🛒 Cart (<span id="cart-count">0</span>)
+  </button>
+</header>
+
+<section class="hero" id="home">
+  <h2>Find Your Next Book 📖</h2>
+  <input type="text" id="search" placeholder="Search books by title or author...">
+</section>
+
+<div class="category-box" id="cat-filters">
+  <div class="cat-btn active" onclick="filterCat(this,'All')">📚 All</div>
+  <div class="cat-btn" onclick="filterCat(this,'Programming')">💻 Programming</div>
+  <div class="cat-btn" onclick="filterCat(this,'Data Science')">📊 Data Science</div>
+  <div class="cat-btn" onclick="filterCat(this,'Engineering')">⚙️ Engineering</div>
+  <div class="cat-btn" onclick="filterCat(this,'Business')">📈 Business</div>
+  <div class="cat-btn" onclick="filterCat(this,'Science')">🔬 Science</div>
+</div>
+
+<section id="book-list" class="grid"></section>
+
+<!-- SHOW MORE BUTTON -->
+<div class="show-more-wrap">
+  <button id="show-more-btn" onclick="showMore()">📖 Show More Books</button>
+</div>
+
+<section id="categories" class="section">
+  <h2>📚 Browse by Category</h2>
+  <p>We have several books across Programming, Engineering, Data Science, Business and Science.</p>
+</section>
+
+<section id="offers" class="section">
+  <h2>🔥 Special Offers</h2>
+  <div class="offer-card">🎉 Get 20% OFF on all Programming Books</div>
+  <div class="offer-card">📚 Buy 2 Get 1 Free on selected items</div>
+  <div class="offer-card">🚚 Free delivery on orders above ₹999</div>
+</section>
+
+<footer>
+  <h2>📞 Contact Us</h2>
+  <p>Email: shrikarbookstore@gmail.com</p>
+  <p>Phone: +91 7338415933</p>
+  <p>Location: Banglore, Karnataka, India</p>
+</footer>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
